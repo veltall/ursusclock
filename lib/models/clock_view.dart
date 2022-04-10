@@ -24,8 +24,6 @@ class _ClockViewState extends State<ClockView> {
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        // padding: const EdgeInsets.all(8.0),
-        // margin: const EdgeInsets.symmetric(vertical: 24),
         width: widget.size,
         height: widget.size,
         child: Transform.rotate(
@@ -56,7 +54,7 @@ class ClockPainter extends CustomPainter {
     var outlineBrush = Paint()
       ..color = const Color(0xFFEAECFF)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width / 20;
+      ..strokeWidth = size.width / 60;
 
     var secHandBrush = Paint()
       ..color = Colors.orange.shade400
@@ -98,15 +96,15 @@ class ClockPainter extends CustomPainter {
     var hourHandX =
         centerX + r * 0.4 * cos((now.hour * 30 + now.minute * 0.5) * pi / 180);
     var hourHandY =
-        centerX + r * 0.4 * sin((now.hour * 30 + now.minute * 0.5) * pi / 180);
+        centerY + r * 0.4 * sin((now.hour * 30 + now.minute * 0.5) * pi / 180);
     var hourHandOffset = Offset(hourHandX, hourHandY);
     canvas.drawLine(center, hourHandOffset, hourHandBrush);
     var minHandX = centerX + r * 0.6 * cos(now.minute * 6 * pi / 180);
-    var minHandY = centerX + r * 0.6 * sin(now.minute * 6 * pi / 180);
+    var minHandY = centerY + r * 0.6 * sin(now.minute * 6 * pi / 180);
     var minHandOffset = Offset(minHandX, minHandY);
     canvas.drawLine(center, minHandOffset, minHandBrush);
     var secHandX = centerX + r * 0.6 * cos(now.second * 6 * pi / 180);
-    var secHandY = centerX + r * 0.6 * sin(now.second * 6 * pi / 180);
+    var secHandY = centerY + r * 0.6 * sin(now.second * 6 * pi / 180);
     var secHandOffset = Offset(secHandX, secHandY);
     canvas.drawLine(center, secHandOffset, secHandBrush);
 
@@ -132,7 +130,7 @@ class ClockPainter extends CustomPainter {
     var startAngle1 = startHour1 * 30 * pi / 180;
     var startAngle2 = startHour2 * 30 * pi / 180;
     var sweepAngle = duration * 30 * pi / 180;
-    var scale = 1.9;
+    var scale = 1.8;
     var rect = Rect.fromCenter(
       center: center,
       width: r * scale,

@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Ursus Clock',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -80,6 +80,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   Flexible(
                     flex: 2,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           formattedTime,
@@ -111,39 +112,51 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     ),
                   ),
                   Flexible(
-                      flex: 2,
-                      fit: FlexFit.tight,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Timezone',
-                            style: TextStyle(
-                              fontFamily: 'avenir',
-                              color: Colors.white,
-                              fontSize: 24,
-                            ),
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: const Icon(
+                            Icons.language,
+                            color: Colors.white,
                           ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.language,
+                        ),
+                        const SizedBox(width: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Timezone',
+                              style: TextStyle(
+                                fontFamily: 'avenir',
                                 color: Colors.white,
+                                fontSize: 24,
                               ),
-                              const SizedBox(width: 16),
-                              Text(
-                                'UTC$offsetSign$tzString',
-                                style: const TextStyle(
-                                  fontFamily: 'avenir',
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
+                            ),
+                            Text(
+                              now.timeZoneName,
+                              style: const TextStyle(
+                                fontFamily: 'avenir',
+                                color: Colors.white,
+                                fontSize: 16,
                               ),
-                            ],
-                          ),
-                        ],
-                      ))
+                            ),
+                            Text(
+                              'UTC$offsetSign$tzString',
+                              style: const TextStyle(
+                                fontFamily: 'avenir',
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),

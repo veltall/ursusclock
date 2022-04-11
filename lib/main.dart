@@ -33,9 +33,14 @@ class MyHomePage extends ConsumerStatefulWidget {
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var now = DateTime.now();
-    var formattedTime = DateFormat('HH:mm').format(now).toString();
+    var now = ref.watch(datetimeProvider);
+    var formattedTime = DateFormat(':mm').format(now).toString();
     var formattedDate = DateFormat('EEE, d MMM').format(now).toString();
     var tzString = now.timeZoneOffset.toString().split('.').first;
     var offsetSign = (tzString.startsWith('-')) ? '' : '+';
@@ -83,7 +88,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          formattedTime,
+                          ref.watch(hourProvider).toString() + formattedTime,
                           style: const TextStyle(
                             fontFamily: 'avenir',
                             color: Colors.white,

@@ -39,9 +39,9 @@ class _ClockViewState extends ConsumerState<ClockView> {
 }
 
 class ClockPainter extends CustomPainter {
+  var now = DateTime.now();
   WidgetRef ref;
   ClockPainter(this.ref);
-  var now = DateTime.now();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -186,4 +186,7 @@ class ClockPainter extends CustomPainter {
 
 var hourProvider = StateProvider((ref) {
   return DateTime.now().hour;
+});
+var datetimeProvider = StateProvider((ref) {
+  return DateTime.now();
 });

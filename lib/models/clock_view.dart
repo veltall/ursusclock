@@ -1,21 +1,22 @@
 import 'dart:async';
 import 'dart:math';
-
+import 'package:ursusclock/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ClockView extends StatefulWidget {
+class ClockView extends ConsumerStatefulWidget {
   final double size;
   const ClockView({Key? key, required this.size}) : super(key: key);
 
   @override
-  State<ClockView> createState() => _ClockViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _ClockViewState();
 }
 
-class _ClockViewState extends State<ClockView> {
+class _ClockViewState extends ConsumerState<ClockView> {
   @override
   void initState() {
     Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {});
+      // setState(() {});
     });
     super.initState();
   }
@@ -29,7 +30,7 @@ class _ClockViewState extends State<ClockView> {
         child: Transform.rotate(
           angle: -pi / 2,
           child: CustomPaint(
-            painter: ClockPainter(),
+            painter: ClockPainter(ref),
           ),
         ),
       ),
@@ -38,6 +39,8 @@ class _ClockViewState extends State<ClockView> {
 }
 
 class ClockPainter extends CustomPainter {
+  WidgetRef ref;
+  ClockPainter(this.ref);
   var now = DateTime.now();
 
   @override
@@ -84,11 +87,6 @@ class ClockPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
-    var segmentBrush = Paint()
-      ..color = Colors.green
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width / 20;
-
     // drawing clock and hands
     canvas.drawCircle(center, r * 0.75, fillBrush);
     canvas.drawCircle(center, r * 0.75, outlineBrush);
@@ -123,21 +121,61 @@ class ClockPainter extends CustomPainter {
       canvas.drawLine(Offset(x1, y1), Offset(x2, y2), dashBrush);
     }
 
+    // =======================================
+    // draw ursus features
+    now = Utilities.modifyDateTime(now, hour: ref.watch(hourProvider));
+    var nowUTC = now.toUtc();
+    var session1 = Utilities.roundToHour(nowUTC, hour: 1).toLocal();
+    var session2 = Utilities.roundToHour(nowUTC, hour: 18).toLocal();
+    var session3 = Utilities.roundToHour(nowUTC, hour: 25).toLocal();
+    var sessionDuration = const Duration(hours: 2);
+
+    // preparing brushes
+    var activeSegmentBrush = Paint()
+      ..color = Colors.green
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width / 20;
+    var futureSegmentBrush = Paint()
+      ..color = Colors.lightBlue
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width / 20;
+
     // draw highlights
-    var startHour1 = 1 + DateTime.now().timeZoneOffset.inHours;
-    var startHour2 = 18 + DateTime.now().timeZoneOffset.inHours;
-    var duration = 2;
-    var startAngle1 = startHour1 * 30 * pi / 180;
-    var startAngle2 = startHour2 * 30 * pi / 180;
-    var sweepAngle = duration * 30 * pi / 180;
-    var scale = 1.8;
-    var rect = Rect.fromCenter(
+    var startAngle1 = session1.hour * 30 * pi / 180;
+    var startAngle2 = session2.hour * 30 * pi / 180;
+    var startAngle3 = session3.hour * 30 * pi / 180;
+    var sweepAngle = sessionDuration.inHours * 30 * pi / 180;
+    var scale = 1.7;
+    var rect1 = Rect.fromCenter(
       center: center,
       width: r * scale,
       height: r * scale,
     );
-    canvas.drawArc(rect, startAngle1, sweepAngle, false, segmentBrush);
-    canvas.drawArc(rect, startAngle2, sweepAngle, false, segmentBrush);
+    var rect2 = Rect.fromCenter(center: center, width: r * 2, height: r * 2);
+
+    if (now.isBefore(session1)) {
+      canvas.drawArc(rect1, startAngle1, sweepAngle, false, futureSegmentBrush);
+    }
+    if (!now.isBefore(session1) &&
+        !now.isAfter(session1.add(sessionDuration))) {
+      canvas.drawArc(rect1, startAngle1, sweepAngle, false, activeSegmentBrush);
+    }
+    if (now.isBefore(session2)) {
+      var rect = session2.difference(now).inSeconds > 43299 ? rect2 : rect1;
+      canvas.drawArc(rect, startAngle2, sweepAngle, false, futureSegmentBrush);
+    }
+    if (!now.isBefore(session2) &&
+        !now.isAfter(session2.add(sessionDuration))) {
+      canvas.drawArc(rect1, startAngle2, sweepAngle, false, activeSegmentBrush);
+    }
+    if (now.isBefore(session3) && session3.difference(now).inHours < 19) {
+      var rect = session3.difference(now).inHours > 9 ? rect2 : rect1;
+      canvas.drawArc(rect, startAngle3, sweepAngle, false, futureSegmentBrush);
+    }
+    if (!now.isBefore(session3) &&
+        !now.isAfter(session3.add(sessionDuration))) {
+      canvas.drawArc(rect1, startAngle3, sweepAngle, false, activeSegmentBrush);
+    }
   }
 
   @override
@@ -145,3 +183,7 @@ class ClockPainter extends CustomPainter {
     return true;
   }
 }
+
+var hourProvider = StateProvider((ref) {
+  return DateTime.now().hour;
+});

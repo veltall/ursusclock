@@ -133,6 +133,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                               style: TextStyle(
                                 fontFamily: 'avenir',
                                 color: Colors.white,
+                                fontWeight: FontWeight.w500,
                                 fontSize: 24,
                               ),
                             ),
@@ -150,6 +151,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                 fontFamily: 'avenir',
                                 color: Colors.white,
                                 fontSize: 16,
+                                fontWeight: FontWeight.w300,
                               ),
                             ),
                           ],

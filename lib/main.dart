@@ -46,129 +46,132 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     var offsetSign = (tzString.startsWith('-')) ? '' : '+';
 
     return Scaffold(
-      backgroundColor: const Color(0xFF2D2F41),
-      body: Row(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildMenuButton('Clock', 'clock_icon.png'),
-              buildMenuButton('Alarm', 'alarm_icon.png'),
-              buildMenuButton('Timer', 'timer_icon.png'),
-              buildMenuButton('Stopwatch', 'stopwatch_icon.png'),
-            ],
-          ),
-          const VerticalDivider(
-            color: Colors.white54,
-            width: 10,
-            thickness: 1,
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Flexible(
-                    flex: 1,
-                    fit: FlexFit.tight,
-                    child: Text(
-                      'Ursus Clock',
-                      style: TextStyle(
-                        fontFamily: 'avenir',
-                        color: Colors.white,
-                        fontSize: 24,
+      body: Container(
+        color: const Color(0xFF2D2F41),
+        width: 500,
+        child: Row(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                buildMenuButton('Clock', 'clock_icon.png'),
+                buildMenuButton('Alarm', 'alarm_icon.png'),
+                buildMenuButton('Timer', 'timer_icon.png'),
+                buildMenuButton('Stopwatch', 'stopwatch_icon.png'),
+              ],
+            ),
+            const VerticalDivider(
+              color: Colors.white54,
+              width: 10,
+              thickness: 1,
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Flexible(
+                      flex: 1,
+                      fit: FlexFit.tight,
+                      child: Text(
+                        'Ursus Clock',
+                        style: TextStyle(
+                          fontFamily: 'avenir',
+                          color: Colors.white,
+                          fontSize: 24,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Flexible(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          ref.watch(hourProvider).toString() + formattedTime,
-                          style: const TextStyle(
-                            fontFamily: 'avenir',
-                            color: Colors.white,
-                            fontSize: 64,
+                    const SizedBox(height: 8),
+                    Flexible(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            ref.watch(hourProvider).toString() + formattedTime,
+                            style: const TextStyle(
+                              fontFamily: 'avenir',
+                              color: Colors.white,
+                              fontSize: 64,
+                            ),
                           ),
-                        ),
-                        Text(
-                          formattedDate,
-                          style: const TextStyle(
-                            fontFamily: 'avenir',
-                            color: Colors.white,
-                            fontSize: 20,
+                          Text(
+                            formattedDate,
+                            style: const TextStyle(
+                              fontFamily: 'avenir',
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Flexible(
-                    flex: 4,
-                    fit: FlexFit.tight,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: ClockView(
-                        size: 250,
+                        ],
                       ),
                     ),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    fit: FlexFit.tight,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: const Icon(
-                            Icons.language,
-                            color: Colors.white,
-                          ),
+                    const Flexible(
+                      flex: 4,
+                      fit: FlexFit.tight,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: ClockView(
+                          size: 250,
                         ),
-                        const SizedBox(width: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Timezone',
-                              style: TextStyle(
-                                fontFamily: 'avenir',
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 24,
-                              ),
-                            ),
-                            Text(
-                              now.timeZoneName,
-                              style: const TextStyle(
-                                fontFamily: 'avenir',
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              'UTC$offsetSign$tzString',
-                              style: const TextStyle(
-                                fontFamily: 'avenir',
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
-                  )
-                ],
+                    Flexible(
+                      flex: 2,
+                      fit: FlexFit.tight,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: const Icon(
+                              Icons.language,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Timezone',
+                                style: TextStyle(
+                                  fontFamily: 'avenir',
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 24,
+                                ),
+                              ),
+                              Text(
+                                now.timeZoneName,
+                                style: const TextStyle(
+                                  fontFamily: 'avenir',
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                'UTC$offsetSign$tzString',
+                                style: const TextStyle(
+                                  fontFamily: 'avenir',
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       // floatingActionButton: Row(
       //   mainAxisAlignment: MainAxisAlignment.end,

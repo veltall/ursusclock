@@ -16,7 +16,7 @@ class _ClockViewState extends ConsumerState<ClockView> {
   @override
   void initState() {
     Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {});
+      // setState(() {});
     });
     super.initState();
   }
@@ -139,43 +139,88 @@ class ClockPainter extends CustomPainter {
       ..color = Colors.yellow
       ..style = PaintingStyle.stroke
       ..strokeWidth = size.width / 20;
+    var timeTilSegmentBrush = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width / 120;
+
+    // Preparing annotation
+    var style = const TextStyle(
+      color: Colors.white,
+      fontSize: 3,
+    );
+    var hourDiff1 = session1.difference(now).inHours,
+        span1 = TextSpan(text: hourDiff1.toString(), style: style),
+        painter1 = TextPainter(text: span1);
+    var hourDiff2 = session1.difference(now).inHours,
+        span2 = TextSpan(text: hourDiff1.toString(), style: style),
+        painter2 = TextPainter(text: span1);
+    var hourDiff3 = session1.difference(now).inHours,
+        span3 = TextSpan(text: hourDiff1.toString(), style: style),
+        painter3 = TextPainter(text: span1);
 
     // draw highlights
     var startAngle1 = session1.hour * 30 * pi / 180;
     var startAngle2 = session2.hour * 30 * pi / 180;
     var startAngle3 = session3.hour * 30 * pi / 180;
+    var timeTillAngle = ((now.hour * 30 + now.minute * 0.5) * pi / 180);
     var sweepAngle = sessionDuration.inHours * 30 * pi / 180;
-    var scale = 1.7;
-    var rect1 = Rect.fromCenter(
-      center: center,
-      width: r * scale,
-      height: r * scale,
-    );
+    var s = 1.7;
+    var rect1 = Rect.fromCenter(center: center, width: r * s, height: r * s);
     var rect2 = Rect.fromCenter(center: center, width: r * 2, height: r * 2);
 
     if (now.isBefore(session1)) {
       canvas.drawArc(rect1, startAngle1, sweepAngle, false, futureSegmentBrush);
+      var angleToSession1 = startAngle1 - timeTillAngle;
+      canvas.drawArc(
+          rect1, timeTillAngle, angleToSession1, false, timeTilSegmentBrush);
+      // var textAngle = timeTillAngle + angleToSession1 / 2;
+      // var textX = r * 0.3 * cos(textAngle), textY = r * sin(textAngle);
+      // painter1.paint(canvas, Offset(textX, textY));
     }
     if (!now.isBefore(session1) &&
         !now.isAfter(session1.add(sessionDuration))) {
       canvas.drawArc(rect1, startAngle1, sweepAngle, false, activeSegmentBrush);
     }
-    if (now.isBefore(session2)) {
+    if (now.isAfter(session1.add(sessionDuration)) && now.isBefore(session2)) {
       var rect = session2.difference(now).inSeconds > 43299 ? rect2 : rect1;
+      var angleToSession2 = startAngle2 - timeTillAngle;
+      if (session2.difference(now).inSeconds > 43299) {
+        angleToSession2 += 2 * pi;
+      }
+      canvas.drawArc(
+          rect1, timeTillAngle, angleToSession2, false, timeTilSegmentBrush);
       canvas.drawArc(rect, startAngle2, sweepAngle, false, futureSegmentBrush);
     }
     if (!now.isBefore(session2) &&
         !now.isAfter(session2.add(sessionDuration))) {
       canvas.drawArc(rect1, startAngle2, sweepAngle, false, activeSegmentBrush);
     }
-    if (now.isBefore(session3) && session3.difference(now).inHours < 19) {
-      var rect = session3.difference(now).inHours > 9 ? rect2 : rect1;
-      canvas.drawArc(rect, startAngle3, sweepAngle, false, futureSegmentBrush);
+    if (now.isAfter(session2.add(sessionDuration)) &&
+        now.isBefore(session3) &&
+        session3.difference(now).inHours < 19) {
+      var angleToSession3 = startAngle3 - timeTillAngle;
+      canvas.drawArc(
+          rect1, timeTillAngle, angleToSession3, false, timeTilSegmentBrush);
+      canvas.drawArc(rect1, startAngle3, sweepAngle, false, futureSegmentBrush);
+
+      // var textAngle = timeTillAngle + angleToSession3 / 2;
+      // var textX = r * 0.3 * cos(textAngle), textY = r * sin(textAngle);
+      // painter3.paint(canvas, Offset(textX, textY));
     }
     if (!now.isBefore(session3) &&
         !now.isAfter(session3.add(sessionDuration))) {
       canvas.drawArc(rect1, startAngle3, sweepAngle, false, activeSegmentBrush);
     }
+
+    // if (now.isBefore(session1)) {
+    //   var angleToSession1 = startAngle1 - timeTillAngle;
+    //   canvas.drawArc(
+    //       rect1, timeTillAngle, angleToSession1, false, timeTilSegmentBrush);
+    // }
+    // if (now.isAfter(session1.add(sessionDuration)) && now.isBefore(session2)) {
+
+    // }
   }
 
   @override

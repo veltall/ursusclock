@@ -16,7 +16,7 @@ class _ClockViewState extends ConsumerState<ClockView> {
   @override
   void initState() {
     Timer.periodic(const Duration(seconds: 1), (timer) {
-      // setState(() {});
+      setState(() {});
     });
     super.initState();
   }
@@ -136,7 +136,7 @@ class ClockPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = size.width / 20;
     var futureSegmentBrush = Paint()
-      ..color = Colors.lightBlue
+      ..color = Colors.yellow
       ..style = PaintingStyle.stroke
       ..strokeWidth = size.width / 20;
 

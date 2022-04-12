@@ -73,7 +73,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     flex: 1,
                     fit: FlexFit.tight,
                     child: Text(
-                      'Clock',
+                      'Ursus Clock',
                       style: TextStyle(
                         fontFamily: 'avenir',
                         color: Colors.white,
@@ -170,24 +170,24 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           ),
         ],
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              ref.read(hourProvider.state).state--;
-            },
-            child: const Icon(Icons.remove),
-          ),
-          const SizedBox(width: 16),
-          FloatingActionButton(
-            onPressed: () {
-              ref.read(hourProvider.state).state++;
-            },
-            child: const Icon(Icons.add),
-          )
-        ],
-      ),
+      // floatingActionButton: Row(
+      //   mainAxisAlignment: MainAxisAlignment.end,
+      //   children: [
+      //     FloatingActionButton(
+      //       onPressed: () {
+      //         ref.read(hourProvider.state).state--;
+      //       },
+      //       child: const Icon(Icons.remove),
+      //     ),
+      //     const SizedBox(width: 16),
+      //     FloatingActionButton(
+      //       onPressed: () {
+      //         ref.read(hourProvider.state).state++;
+      //       },
+      //       child: const Icon(Icons.add),
+      //     )
+      //   ],
+      // ),
     );
   }
 

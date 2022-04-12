@@ -16,25 +16,76 @@ class _ClockViewState extends ConsumerState<ClockView> {
   @override
   void initState() {
     Timer.periodic(const Duration(seconds: 1), (timer) {
-      // setState(() {});
+      setState(() {});
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: widget.size,
-        height: widget.size,
-        child: Transform.rotate(
-          angle: -pi / 2,
-          child: CustomPaint(
-            painter: ClockPainter(ref),
+    int waitMS = ref.watch(waitDurationProvider).inMicroseconds;
+    double waitTime = (waitMS / (3.6 * pow(10, 9)) * 100).round() / 100.0;
+    bool active = (waitTime < 0) ? true : false;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: SizedBox(
+            width: widget.size,
+            height: widget.size,
+            child: Transform.rotate(
+              angle: -pi / 2,
+              child: CustomPaint(
+                painter: ClockPainter(ref),
+              ),
+            ),
           ),
         ),
-      ),
+        Row(
+          children: [
+            const Icon(Icons.place, color: Colors.white),
+            const SizedBox(width: 16),
+            Text(
+              active ? "In progress" : waitTime.toString() + " hours",
+              style: const TextStyle(
+                color: Colors.white,
+                fontFamily: "avenir",
+              ),
+            ),
+          ],
+        ),
+        CustomPaint(
+          painter: ThinLinePainter(active),
+        ),
+      ],
     );
+  }
+}
+
+class ThinLinePainter extends CustomPainter {
+  final bool _isActive;
+  ThinLinePainter(this._isActive);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var centerX = size.width / 2;
+    var centerY = size.height / 2;
+    var center = Offset(centerX, centerY);
+    var hintBrush = Paint()
+      ..color = const Color(0xFFEAECFF)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width;
+    var segmentBrush = Paint()
+      ..color = _isActive ? Colors.green : Colors.yellow
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 12;
+    canvas.drawLine(const Offset(160, 0), center, hintBrush);
+    canvas.drawLine(const Offset(160, 0), const Offset(220, 0), segmentBrush);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
 
@@ -144,21 +195,6 @@ class ClockPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = size.width / 120;
 
-    // Preparing annotation
-    var style = const TextStyle(
-      color: Colors.white,
-      fontSize: 3,
-    );
-    var hourDiff1 = session1.difference(now).inHours,
-        span1 = TextSpan(text: hourDiff1.toString(), style: style),
-        painter1 = TextPainter(text: span1);
-    var hourDiff2 = session1.difference(now).inHours,
-        span2 = TextSpan(text: hourDiff1.toString(), style: style),
-        painter2 = TextPainter(text: span1);
-    var hourDiff3 = session1.difference(now).inHours,
-        span3 = TextSpan(text: hourDiff1.toString(), style: style),
-        painter3 = TextPainter(text: span1);
-
     // draw highlights
     var startAngle1 = session1.hour * 30 * pi / 180;
     var startAngle2 = session2.hour * 30 * pi / 180;
@@ -174,9 +210,6 @@ class ClockPainter extends CustomPainter {
       var angleToSession1 = startAngle1 - timeTillAngle;
       canvas.drawArc(
           rect1, timeTillAngle, angleToSession1, false, timeTilSegmentBrush);
-      // var textAngle = timeTillAngle + angleToSession1 / 2;
-      // var textX = r * 0.3 * cos(textAngle), textY = r * sin(textAngle);
-      // painter1.paint(canvas, Offset(textX, textY));
     }
     if (!now.isBefore(session1) &&
         !now.isAfter(session1.add(sessionDuration))) {
@@ -203,24 +236,11 @@ class ClockPainter extends CustomPainter {
       canvas.drawArc(
           rect1, timeTillAngle, angleToSession3, false, timeTilSegmentBrush);
       canvas.drawArc(rect1, startAngle3, sweepAngle, false, futureSegmentBrush);
-
-      // var textAngle = timeTillAngle + angleToSession3 / 2;
-      // var textX = r * 0.3 * cos(textAngle), textY = r * sin(textAngle);
-      // painter3.paint(canvas, Offset(textX, textY));
     }
     if (!now.isBefore(session3) &&
         !now.isAfter(session3.add(sessionDuration))) {
       canvas.drawArc(rect1, startAngle3, sweepAngle, false, activeSegmentBrush);
     }
-
-    // if (now.isBefore(session1)) {
-    //   var angleToSession1 = startAngle1 - timeTillAngle;
-    //   canvas.drawArc(
-    //       rect1, timeTillAngle, angleToSession1, false, timeTilSegmentBrush);
-    // }
-    // if (now.isAfter(session1.add(sessionDuration)) && now.isBefore(session2)) {
-
-    // }
   }
 
   @override
@@ -229,6 +249,28 @@ class ClockPainter extends CustomPainter {
   }
 }
 
+var waitDurationProvider = StateProvider((ref) {
+  var now =
+      Utilities.modifyDateTime(DateTime.now(), hour: ref.watch(hourProvider));
+  var nowUTC = now.toUtc();
+  var session1 = Utilities.roundToHour(nowUTC, hour: 1).toLocal();
+  var session2 = Utilities.roundToHour(nowUTC, hour: 18).toLocal();
+  var session3 = Utilities.roundToHour(nowUTC, hour: 25).toLocal();
+  var sessionDuration = const Duration(hours: 2);
+
+  var waitDuration = const Duration(minutes: -1);
+
+  if (now.isBefore(session1)) {
+    waitDuration = session1.difference(now);
+  }
+  if (now.isAfter(session1.add(sessionDuration)) && now.isBefore(session2)) {
+    waitDuration = session2.difference(now);
+  }
+  if (now.isAfter(session2.add(sessionDuration)) && now.isBefore(session3)) {
+    waitDuration = session3.difference(now);
+  }
+  return waitDuration;
+});
 var hourProvider = StateProvider((ref) {
   return DateTime.now().hour;
 });
